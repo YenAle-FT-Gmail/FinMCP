@@ -41,12 +41,13 @@ from api_docs_server import mcp
 print('🔗 Resource URI Patterns:')
 print()
 resources = [
-    ('api-docs://fred/{path}', 'FRED API documentation (Federal Reserve Economic Data)'),
-    ('api-docs://etherscan/{path}', 'Etherscan API documentation (Ethereum blockchain)'),
-    ('api-docs://estat/{path}', 'e-Stat API documentation (Japan statistics)'),
-    ('api-docs://imf/{path}', 'IMF API documentation (International Monetary Fund)'),
-    ('api-docs://bis/{path}', 'BIS API documentation (Bank for International Settlements)'),
-    ('api-docs://worldbank/{path}', 'World Bank API documentation')
+    ('@finmcp:fred', 'FRED API documentation (Federal Reserve Economic Data)'),
+    ('@finmcp:etherscan', 'Etherscan API documentation (Ethereum blockchain)'),
+    ('@finmcp:estat', 'e-Stat API documentation (Japan statistics)'),
+    ('@finmcp:imf', 'IMF API documentation (International Monetary Fund)'),
+    ('@finmcp:bis', 'BIS API documentation (Bank for International Settlements)'),
+    ('@finmcp:worldbank', 'World Bank API documentation'),
+    ('@finmcp:docs', 'Claude Code MCP documentation')
 ]
 
 for uri, desc in resources:
@@ -55,13 +56,14 @@ for uri, desc in resources:
     print()
 
 print('📝 Example usage:')
-print('  • api-docs://fred/ - Main FRED documentation')
-print('  • api-docs://fred/v2/series - FRED series endpoints')
-print('  • api-docs://etherscan/getting-started - Etherscan getting started')
-print('  • api-docs://estat/api-guide - e-Stat API guide')
-print('  • api-docs://imf/data-structure - IMF data structure docs')
-print('  • api-docs://bis/endpoints - BIS API endpoints')
-print('  • api-docs://worldbank/basic-call-structure - World Bank basics')
+print('  • @finmcp:fred - Main FRED documentation')
+print('  • @finmcp:fred/series - FRED series endpoints')
+print('  • @finmcp:etherscan - Etherscan documentation')
+print('  • @finmcp:estat - e-Stat API guide')
+print('  • @finmcp:imf - IMF data structure docs')
+print('  • @finmcp:bis - BIS API endpoints')
+print('  • @finmcp:worldbank - World Bank basics')
+print('  • @finmcp:docs - Claude Code MCP documentation')
 print()
 print('💡 Tip: Use dynamic paths to access specific documentation sections')
 print('    The server will fetch live content and cache it for 1 hour')

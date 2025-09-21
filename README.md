@@ -49,23 +49,43 @@ cd FinMCP
 ./scripts/setup.sh
 ```
 
-### 2. Start the Server
+### 2. Add to Claude Code
 
 ```bash
-# Start the MCP server
-./scripts/run.sh
+# Add MCP server globally to Claude Code
+claude mcp add --scope user finmcp -- python3 $(pwd)/src/mcp_server.py
 ```
 
-The server will start on `http://localhost:8000` by default.
+### 3. Verify Connection
 
-### 3. Inspect Available Resources
+In Claude Code:
+```
+/mcp
+```
+Should show: `Reconnected to finmcp.`
+
+### 4. Usage
 
 ```bash
-# View all available MCP resources
-./scripts/inspect.sh
+# Fetch API documentation
+@finmcp:fred
+@finmcp:etherscan  
+@finmcp:fred/series
 ```
 
-## 🔧 Usage with Claude
+## 📖 Available Resources
+
+- `@finmcp:fred` - FRED main documentation
+- `@finmcp:fred/series` - FRED series endpoints  
+- `@finmcp:fred/series/observations` - FRED time series data
+- `@finmcp:etherscan` - Etherscan API docs
+- `@finmcp:estat` - Japan e-Stat API
+- `@finmcp:imf` - IMF API
+- `@finmcp:bis` - Bank for International Settlements
+- `@finmcp:worldbank` - World Bank API
+- `@finmcp:docs` - Claude Code MCP documentation
+
+## 🔧 Legacy Usage with Claude
 
 ### Option 1: VS Code Extension
 

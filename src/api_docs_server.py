@@ -335,13 +335,22 @@ async def worldbank_documentation(path: str) -> Resource:
 
 def main():
     """Run the MCP server."""
-    logger.info(f"Starting FinMCP server on http://localhost:{PORT}")
-    logger.info(f"Cache directory: {os.path.abspath(cache_dir)}")
-    logger.info(f"Supported APIs: {', '.join(API_CONFIGS.keys())}")
+    import sys
     
-    # Start the server using FastMCP's built-in server
-    import uvicorn
-    uvicorn.run(mcp.sse_app, host="localhost", port=PORT)
+    # Check if we're running in stdio mode (for VS Code) or HTTP mode
+    if "--stdio" in sys.argv or not sys.stdin.isatty():
+        # Run in stdio mode for VS Code MCP
+        logger.info(f"Starting FinMCP server in stdio mode")
+        logger.info(f"Cache directory: {os.path.abspath(cache_dir)}")
+        logger.info(f"Supported APIs: {', '.join(API_CONFIGS.keys())}")
+        mcp.run(transport="stdio")
+    else:
+        # Run as HTTP server
+        logger.info(f"Starting FinMCP server on http://localhost:{PORT}")
+        logger.info(f"Cache directory: {os.path.abspath(cache_dir)}")
+        logger.info(f"Supported APIs: {', '.join(API_CONFIGS.keys())}")
+        import uvicorn
+        uvicorn.run(mcp.sse_app, host="localhost", port=PORT)
 
 
 if __name__ == "__main__":
