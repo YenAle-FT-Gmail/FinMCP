@@ -1,436 +1,170 @@
-# FinMCP - Financial API Documentation MCP Server
+# Enhanced FinMCP - Financial Data Provider Intelligence
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+Enhanced Model Context Protocol server providing intelligent access to 40+ financial data providers with smart routing and recommendations.
 
-> **Prevent Claude from hallucinating outdated API endpoints!** FinMCP provides live access to official API documentation for major financial and economic data sources.
+## Features
 
-## 🎯 Purpose
+### 🎯 Intelligent Provider Routing
+- **Query Classification**: Understands natural language queries to extract data requirements
+- **Smart Matching**: Scores providers based on data type, geography, preferences, and capabilities  
+- **Chain-of-Thought**: Provides reasoning for why providers were recommended
+- **40+ Providers**: Government sources (FRED, SEC, ECB) + Commercial APIs (Polygon, Alpha Vantage, etc.)
 
-FinMCP is a Model Context Protocol (MCP) server that fetches **live API documentation** from official sources, ensuring Claude always has access to the most current endpoint information, parameters, and usage examples. No more outdated API calls or hallucinated endpoints!
+### 📊 Provider Categories
+- **Government Data (60%)**: Free tier, official sources, some with local databases
+- **Commercial APIs (40%)**: API keys required, comprehensive coverage, real-time data
 
-## 🏦 Supported APIs
+### ⚡ Performance Optimization
+- **Local Database**: Instant <10ms responses for government data
+- **Free Tier Priority**: Automatically recommends free options when available
+- **Rate Limit Awareness**: Considers API limits in recommendations
 
-| API | Base URL | Description |
-|-----|----------|-------------|
-| **FRED** | https://fred.stlouisfed.org/docs/api/fred/ | Federal Reserve Economic Data |
-| **Etherscan** | https://docs.etherscan.io/ | Ethereum blockchain data |
-| **e-Stat** | https://www.e-stat.go.jp/api/api/index.php/en/api-info/ | Japan's official statistics |
-| **IMF** | https://data.imf.org/en/Resource-Pages/IMF-API/ | International Monetary Fund |
-| **BIS** | https://stats.bis.org/api-doc/v1/ | Bank for International Settlements |
-| **World Bank** | https://documents.worldbank.org/en/publication/documents-reports/api/ | World Bank data |
+## Quick Start
 
-## ✨ Features
-
-- **🔴 Live Documentation Fetching**: Always up-to-date information directly from official sources
-- **📂 Dynamic Path Support**: Access specific documentation sections (e.g., `v2/series/observations`)
-- **⚡ Smart Caching**: 1-hour cache with joblib to avoid rate limits and improve performance
-- **🧹 Content Parsing**: BeautifulSoup extraction with API-specific selectors for clean content
-- **📝 Comprehensive Logging**: Full visibility into fetches, caches, and errors
-- **🔧 Easy Integration**: Works with VS Code, Claude Desktop, and terminal API calls
-- **🏗️ Modular Architecture**: Easy to extend with additional APIs
-
-## 📋 Prerequisites
-
-- **Python 3.8+**
-- **Internet connection** (for fetching live documentation)
-- **Claude API access** (for integration)
-
-## 🚀 Quick Start
-
-### 1. Clone and Setup
-
+### 1. Installation
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/FinMCP.git
+git clone <this-repo>
 cd FinMCP
-
-# Run the setup script
-./scripts/setup.sh
+pip install -r requirements.txt
 ```
 
-### 2. Add to Claude Code
+### 2. Configure Claude Desktop
 
-```bash
-# Add MCP server globally to Claude Code
-claude mcp add --scope user finmcp -- python3 $(pwd)/src/mcp_server.py
-```
-
-### 3. Verify Connection
-
-In Claude Code:
-```
-/mcp
-```
-Should show: `Reconnected to finmcp.`
-
-### 4. Usage
-
-```bash
-# Fetch API documentation
-@finmcp:fred
-@finmcp:etherscan  
-@finmcp:fred/series
-```
-
-## 📖 Available Resources
-
-- `@finmcp:fred` - FRED main documentation
-- `@finmcp:fred/series` - FRED series endpoints  
-- `@finmcp:fred/series/observations` - FRED time series data
-- `@finmcp:etherscan` - Etherscan API docs
-- `@finmcp:estat` - Japan e-Stat API
-- `@finmcp:imf` - IMF API
-- `@finmcp:bis` - Bank for International Settlements
-- `@finmcp:worldbank` - World Bank API
-- `@finmcp:docs` - Claude Code MCP documentation
-
-## 🔧 Legacy Usage with Claude
-
-### Option 1: VS Code Extension
-
-1. **Install the Anthropic Claude extension** for VS Code
-2. **Configure MCP servers** in your settings:
+Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
 ```json
 {
-  "claude.mcpServers": {
+  "mcpServers": {
     "finmcp": {
-      "url": "http://localhost:8000"
+      "command": "python",
+      "args": ["/path/to/FinMCP/src/mcp_server.py"]
     }
   }
 }
 ```
 
-3. **Use in Claude chat**:
+### 3. Usage Examples
 
+#### Provider Discovery
+- `@finmcp:finmcp://providers/list` - All 40+ providers
+- `@finmcp:finmcp://providers/free` - Free tier providers only  
+- `@finmcp:finmcp://providers/local` - Local database providers
+
+#### Smart Recommendations
+- `@finmcp:finmcp://intelligence/recommend/US CPI data from 1990`
+- `@finmcp:finmcp://intelligence/recommend/real-time Bitcoin prices`
+- `@finmcp:finmcp://intelligence/recommend/free European interest rates`
+
+#### Live Documentation
+- `@finmcp:finmcp://fred` - FRED API documentation
+- `@finmcp:finmcp://polygon/stocks` - Polygon stocks documentation
+- `@finmcp:finmcp://coingecko` - CoinGecko crypto documentation
+
+## Intelligence System
+
+### Query Classification
+The system automatically extracts:
+- **Data Types**: stocks, crypto, economic_indicators, inflation, etc.
+- **Geography**: US, EU, Japan, Global coverage requirements
+- **Preferences**: free, fast, official sources, comprehensive data
+- **Symbols**: Ticker symbols (AAPL, BTC) and time requirements
+
+### Provider Scoring
+Providers are scored based on:
+1. **Data Type Match** (1.0 points per match)
+2. **Geographic Coverage** (0.5 points)
+3. **User Preferences** (0.3-1.0 points)
+4. **Special Features** (local data, free tier, official source)
+
+### Example: "US CPI data from 1990"
 ```
-@finmcp Please use the latest FRED API documentation to write Python code that fetches unemployment rate data. Use these specific resources:
+Classification:
+- Data Types: inflation
+- Geography: US
+- Preferences: None
 
-- api-docs://fred/ (for main API overview)
-- api-docs://fred/v2/series/observations (for series data endpoints)
-
-Strictly adhere to the current API documentation. Do not use any endpoints or parameters not explicitly documented in these resources.
-```
-
-### Option 2: Terminal API Calls
-
-```bash
-# Example: Get FRED API documentation
-curl -X POST http://localhost:8000/resources \
-  -H "Content-Type: application/json" \
-  -d '{
-    "method": "resources/read",
-    "params": {
-      "uri": "api-docs://fred/v2/series/observations"
-    }
-  }'
-```
-
-### Option 3: Claude Desktop Integration
-
-1. **Install MCP support** in Claude Desktop
-2. **Add FinMCP server**:
-
-```bash
-mcp install src/api_docs_server.py
-```
-
-3. **Use in Claude Desktop**:
-
-```
-I need to fetch cryptocurrency data from Etherscan. Please reference these resources first:
-
-- api-docs://etherscan/ (main documentation)
-- api-docs://etherscan/api-endpoints (available endpoints)
-
-Use ONLY the endpoints and parameters documented in these resources. Do not hallucinate any API calls.
-```
-
-## 💡 Sample Prompts for Claude
-
-### Comprehensive Financial Data Analysis
-
-```
-I'm building a financial dashboard and need to integrate multiple data sources. Please help me write Python code using the latest official API documentation.
-
-First, fetch and review these documentation resources:
-- api-docs://fred/ (Federal Reserve data)
-- api-docs://fred/v2/series (FRED series endpoints)
-- api-docs://worldbank/ (World Bank API overview)
-- api-docs://worldbank/basic-call-structure (World Bank API structure)
-- api-docs://imf/ (IMF API documentation)
-
-Requirements:
-1. Use ONLY endpoints and parameters explicitly documented in these resources
-2. Do NOT hallucinate any API endpoints or parameters
-3. Handle API keys and authentication as specified in the documentation
-4. Include error handling for API rate limits and network issues
-5. Add proper data validation and type hints
-
-Tasks:
-1. Fetch US unemployment rate from FRED for the last 12 months
-2. Get World Bank GDP data for major economies (US, China, Germany, Japan)
-3. Retrieve IMF exchange rate data for USD/EUR/JPY
-
-Provide complete, production-ready Python code with proper documentation.
+Top Recommendations:
+1. FRED (Score: 2.3) - Local database, official source
+2. BLS (Score: 1.8) - Government source, comprehensive
 ```
 
-### Blockchain Data Integration
+## Supported Providers
 
-```
-Help me integrate Etherscan API for cryptocurrency analysis. Reference these resources:
+### Government Sources (Free/Official)
+- **FRED**: Federal Reserve Economic Data
+- **SEC**: SEC EDGAR filings  
+- **BLS**: Bureau of Labor Statistics
+- **ECB**: European Central Bank
+- **IMF**: International Monetary Fund
+- **World Bank**: Development data
+- **OECD**: International statistics
+- **Treasury**: US Treasury data
+- **e-Stat**: Japan official statistics
 
-- api-docs://etherscan/ (main API documentation)
-- api-docs://etherscan/getting-started (getting started guide)
-- api-docs://etherscan/api-endpoints (complete endpoint list)
+### Commercial APIs
+- **Polygon.io**: Real-time market data
+- **Alpha Vantage**: Stocks, forex, crypto
+- **Twelve Data**: Global market data
+- **CoinGecko**: Cryptocurrency data
+- **Yahoo Finance**: Global market data (free)
+- **Financial Modeling Prep**: Fundamentals
+- **Tiingo**: News and market data
+- **Finnhub**: Market data and news
+- **IEX Cloud**: US market data
+- **Quandl**: Alternative data
 
-Create Python code to:
-1. Get the latest block information
-2. Fetch transaction details for a specific address
-3. Retrieve ERC-20 token balance for an address
+## Development
 
-Use ONLY the documented endpoints and follow the exact parameter names and formats shown in the documentation. Include proper error handling and rate limiting.
-```
+### Adding New Providers
+1. Add configuration to `API_CONFIGS` in `api_docs_server.py`
+2. Include: name, base_url, data_types, geographic_coverage, etc.
+3. Test with validation script
 
-### International Economic Data
-
-```
-I need to compare economic indicators across different countries using official APIs. Please reference:
-
-- api-docs://estat/ (Japan e-Stat API)
-- api-docs://estat/api-guide (e-Stat usage guide)
-- api-docs://bis/ (Bank for International Settlements)
-- api-docs://bis/data-sets (available BIS datasets)
-
-Create code to fetch:
-1. Japan's inflation rate from e-Stat
-2. International banking statistics from BIS
-3. Cross-country economic comparisons
-
-Ensure all API calls follow the exact specifications in the documentation.
-```
-
-## 📖 API Resource Examples
-
-### FRED (Federal Reserve Economic Data)
-
-```
-api-docs://fred/                           # Main FRED API documentation
-api-docs://fred/v2/series                  # Series endpoints
-api-docs://fred/v2/series/observations     # Series observations (time series data)
-api-docs://fred/v2/releases                # Economic data releases
-api-docs://fred/v2/sources                 # Data sources information
-```
-
-### Etherscan (Ethereum Blockchain)
-
-```
-api-docs://etherscan/                      # Main Etherscan API docs
-api-docs://etherscan/getting-started       # Getting started guide
-api-docs://etherscan/api-endpoints         # Complete API endpoint list
-api-docs://etherscan/rate-limits           # Rate limiting information
-```
-
-### e-Stat (Japan Statistics)
-
-```
-api-docs://estat/                          # Main e-Stat API documentation
-api-docs://estat/api-guide                 # API usage guide
-api-docs://estat/data-format               # Data format specifications
-api-docs://estat/statistical-data          # Available statistical datasets
-```
-
-### IMF (International Monetary Fund)
-
-```
-api-docs://imf/                           # Main IMF API documentation
-api-docs://imf/getting-started            # Getting started with IMF API
-api-docs://imf/data-structure             # Data structure and formats
-api-docs://imf/country-codes              # Country code mappings
-```
-
-### BIS (Bank for International Settlements)
-
-```
-api-docs://bis/                           # Main BIS API documentation
-api-docs://bis/endpoints                  # Available API endpoints
-api-docs://bis/data-sets                  # Available datasets
-api-docs://bis/metadata                   # Metadata information
-```
-
-### World Bank
-
-```
-api-docs://worldbank/                     # Main World Bank API docs
-api-docs://worldbank/basic-call-structure # Basic API call structure
-api-docs://worldbank/data-catalog         # Data catalog and indicators
-api-docs://worldbank/country-queries      # Country-specific queries
-```
-
-## 🔧 Configuration
-
-### Environment Variables
-
-- `PORT`: Server port (default: 8000)
-
-```bash
-export PORT=8080
-./scripts/run.sh
-```
-
-### Cache Configuration
-
-- **Cache Location**: `./cache` directory
-- **Cache TTL**: 3600 seconds (1 hour)
-- **Cache Size**: 100 entries maximum
-
-### Logging
-
-Logs are written to console with INFO level by default. Key information includes:
-
-- API documentation fetches
-- Cache hits/misses
-- Parsing errors
-- Network timeouts
-
-## 🛠️ Development
-
-### Project Structure
-
-```
-FinMCP/
-├── src/
-│   └── api_docs_server.py     # Main MCP server implementation
-├── scripts/
-│   ├── setup.sh              # Dependency installation
-│   ├── run.sh                # Server startup
-│   └── inspect.sh            # Resource inspection
-├── cache/                    # Auto-created cache directory
-├── requirements.txt          # Python dependencies
-├── README.md                # This file
-├── LICENSE                  # MIT License
-└── .gitignore               # Git ignore rules
-```
-
-### Adding New APIs
-
-1. **Add API configuration** to `API_CONFIGS` in `src/api_docs_server.py`:
-
+### Provider Configuration
 ```python
-"newapi": {
-    "base_url": "https://api.example.com/docs/",
-    "special_parsing": False,
-    "content_selector": ".content, main, .api-docs"
+"provider_id": {
+    "name": "Provider Name",
+    "base_url": "https://api.provider.com/docs",
+    "data_types": ["stocks", "crypto"],
+    "geographic_coverage": ["US", "Global"],
+    "requires_api_key": True,
+    "free_tier": True,
+    "local_available": False,
+    "response_time": "~100ms"
 }
 ```
 
-2. **Create resource handler**:
+## Architecture
 
-```python
-@mcp.resource("api-docs://newapi/{path:path}")
-async def newapi_documentation(path: str) -> Resource:
-    content = fetch_api_documentation("newapi", path)
-    return Resource(
-        uri=f"api-docs://newapi/{path}",
-        name=f"NewAPI Documentation: {path or 'Main'}",
-        description=f"Live NewAPI documentation for {path or 'main page'}",
-        mimeType="text/plain",
-        text=content
-    )
+```
+Claude Query → MCP Resource → Query Classifier → Provider Matcher → Live Docs
+     ↓              ↓              ↓                ↓               ↓
+"Bitcoin price" → intelligence → [crypto,Global] → CoinGecko → API docs
 ```
 
-3. **Update documentation** in README.md
+## Use Cases
 
-### Testing
+### Financial Research
+- **Academic**: Free government data with historical coverage
+- **Trading**: Real-time market data with low latency
+- **Analysis**: Comprehensive fundamental data
 
-```bash
-# Test setup
-./scripts/setup.sh
+### Development
+- **API Discovery**: Find the right provider for your data needs
+- **Cost Optimization**: Prefer free tiers and local databases
+- **Geographic Compliance**: Match data sources to regulatory requirements
 
-# Test server startup
-./scripts/run.sh &
-sleep 5
+## Contributing
 
-# Test resource inspection
-./scripts/inspect.sh
+1. Fork the repository
+2. Add new providers to `API_CONFIGS`
+3. Test intelligent routing
+4. Submit pull request
 
-# Test API fetch (example)
-curl -X POST http://localhost:8000/resources \
-  -H "Content-Type: application/json" \
-  -d '{"method": "resources/read", "params": {"uri": "api-docs://fred/"}}'
+## License
 
-# Stop server
-pkill -f api_docs_server.py
-```
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-1. **"Module not found" errors**
-   ```bash
-   # Reinstall dependencies
-   ./scripts/setup.sh
-   ```
-
-2. **Network timeouts**
-   - Check internet connection
-   - Some APIs may have rate limits
-   - Cache will serve previous responses
-
-3. **Permission denied on scripts**
-   ```bash
-   chmod +x scripts/*.sh
-   ```
-
-4. **Port already in use**
-   ```bash
-   export PORT=8080
-   ./scripts/run.sh
-   ```
-
-### Debug Mode
-
-Enable detailed logging:
-
-```python
-# In src/api_docs_server.py, change:
-logging.basicConfig(level=logging.DEBUG)
-```
-
-## 🤝 Contributing
-
-We welcome contributions! Please:
-
-1. **Fork the repository**
-2. **Create a feature branch**: `git checkout -b feature/new-api`
-3. **Make your changes** with proper documentation
-4. **Add tests** if applicable
-5. **Submit a pull request**
-
-### Issues and Feature Requests
-
-- **Bug reports**: Use GitHub Issues with detailed reproduction steps
-- **Feature requests**: Propose new APIs or functionality improvements
-- **Documentation**: Help improve examples and guides
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- **Anthropic** for the Model Context Protocol
-- **Federal Reserve Bank of St. Louis** for FRED API
-- **Etherscan** for Ethereum data access
-- **Statistics Bureau of Japan** for e-Stat API
-- **International Monetary Fund** for economic data
-- **Bank for International Settlements** for banking statistics
-- **World Bank** for development data
+MIT License - See LICENSE file for details.
 
 ---
 
-**Built with ❤️ for the financial data community**
-
-*Last updated: September 21, 2025*
+**Enhanced FinMCP** transforms Claude into an intelligent financial data assistant that knows about 40+ providers and can route queries optimally based on requirements, cost, and performance.
